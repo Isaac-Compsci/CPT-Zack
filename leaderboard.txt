@@ -1,7 +1,9 @@
-zack
-Zack
-Savas
-1
-Deanna
-
-zack,100
+zack,200
+zack,500
+zack,500
+zack,200
+zack,200
+zack,400
+zack,300
+shim,200
+shim,400

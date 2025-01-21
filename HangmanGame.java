@@ -1,5 +1,4 @@
 import arc.*;
-import java.util.*;
 
 public class HangmanGame {
 
@@ -96,29 +95,22 @@ public class HangmanGame {
         }
 
         int points = 0;
-        boolean cheatUsed = false;
 
         con.println("Let's play Hangman!");
 
         while (attemptsLeft > 0) {
             con.clear();
+            drawHangman(con, 6 - attemptsLeft);
             con.println("Word: " + new String(revealedWord));
             con.println("Attempts left: " + attemptsLeft);
             con.print("Guess a letter or the whole word: ");
 
             String guess = con.readLine().toUpperCase();
 
-            if (guess.equals("STATITAN")) {
-                cheatUsed = true;
-                attemptsLeft++;
-                con.println("Cheat activated! You get an extra guess.");
-                con.sleep(2000);
-                continue;
-            }
-
             if (guess.equals(secretWord)) {
                 points = attemptsLeft * 100;
                 con.clear();
+                drawHangman(con, 6 - attemptsLeft);
                 con.println("Congratulations! You guessed the word: " + secretWord);
                 con.println("You earned " + points + " points!");
                 updateLeaderboard(con, leaderboardFileName, points);
@@ -143,6 +135,7 @@ public class HangmanGame {
                 if (new String(revealedWord).equals(secretWord)) {
                     points = attemptsLeft * 100;
                     con.clear();
+                    drawHangman(con, 6 - attemptsLeft);
                     con.println("Congratulations! You guessed the word: " + secretWord);
                     con.println("You earned " + points + " points!");
                     updateLeaderboard(con, leaderboardFileName, points);
@@ -153,11 +146,10 @@ public class HangmanGame {
                 revealRandomLetter(secretWord, revealedWord);
                 con.println("Wrong guess! A letter has been revealed.");
             }
-
-            drawHangman(con, 6 - attemptsLeft);
         }
 
         con.clear();
+        drawHangman(con, 6);
         con.println("Game over! The word was: " + secretWord);
     }
 
@@ -172,7 +164,7 @@ public class HangmanGame {
     private static void drawHangman(Console con, int stage) {
         String[] hangmanStages = {
             """
-              -----
+              ----- 
               |   |
                   |
                   |
@@ -180,7 +172,7 @@ public class HangmanGame {
                   |
             """,
             """
-              -----
+              ----- 
               |   |
               O   |
                   |
@@ -188,7 +180,7 @@ public class HangmanGame {
                   |
             """,
             """
-              -----
+              ----- 
               |   |
               O   |
               |   |
@@ -196,7 +188,7 @@ public class HangmanGame {
                   |
             """,
             """
-              -----
+              ----- 
               |   |
               O   |
              /|   |
@@ -204,7 +196,7 @@ public class HangmanGame {
                   |
             """,
             """
-              -----
+              ----- 
               |   |
               O   |
              /|\\  |
@@ -212,7 +204,7 @@ public class HangmanGame {
                   |
             """,
             """
-              -----
+              ----- 
               |   |
               O   |
              /|\\  |
@@ -220,7 +212,7 @@ public class HangmanGame {
                   |
             """,
             """
-              -----
+              ----- 
               |   |
               O   |
              /|\\  |
@@ -230,7 +222,6 @@ public class HangmanGame {
         };
         con.println(hangmanStages[stage]);
     }
-
     private static void showHelp(Console con) {
         con.clear();
         con.println("HOW TO PLAY HANGMAN:");
@@ -244,49 +235,76 @@ public class HangmanGame {
         con.readLine();
     }
 
-    private static void showLeaderboard(Console con, String leaderboardFileName) {
-        con.clear();
-        con.println("LEADERBOARD:");
-        List<String[]> leaderboard = new ArrayList<>();
+private static void showLeaderboard(Console con, String leaderboardFileName) {
+    con.clear();
+    con.println("LEADERBOARD:");
 
-        try {
-            TextInputFile file = new TextInputFile(leaderboardFileName);
-            while (!file.eof()) {
-                String[] entry = file.readLine().split(",");
-                leaderboard.add(entry);
-            }
-            file.close();
+    // Read the leaderboard data from the file
+    TextInputFile file = new TextInputFile(leaderboardFileName);
+    String[] entries = new String[100];
+    int count = 0;
 
-            leaderboard.sort((a, b) -> Integer.parseInt(b[1]) - Integer.parseInt(a[1]));
+    while (!file.eof()) {
+        entries[count] = file.readLine();
+        count++;
+    }
+    file.close();
 
-            con.println("Names                  |   Points");
-            for (int i = 0; i < leaderboard.size(); i++) {
-                String[] entry = leaderboard.get(i);
-                con.println((i + 1) + ")  " + padRight(entry[0], 20) + "|    " + entry[1]);
-            }
-        } catch (Exception e) {
-            con.println("No leaderboard data available.");
-        }
-        con.println("Press Enter to return to the main menu.");
-        con.readLine();
+    // Split entries into names and points arrays
+    String[] names = new String[count];
+    int[] points = new int[count];
+
+    for (int i = 0; i < count; i++) {
+        String[] split = entries[i].split(",");
+        names[i] = split[0];
+        points[i] = Integer.parseInt(split[1]);
     }
 
-    private static void updateLeaderboard(Console con, String leaderboardFileName, int points) {
-        con.print("Enter your name for the leaderboard: ");
-        String name = con.readLine();
+    // Sort the leaderboard by points in descending order
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (points[j] < points[j + 1]) {
+                // Swap points
+                int tempPoints = points[j];
+                points[j] = points[j + 1];
+                points[j + 1] = tempPoints;
 
-        try {
-            TextOutputFile file = new TextOutputFile(leaderboardFileName, true);
-            file.println(name + "," + points);
-            file.close();
-        } catch (Exception e) {
-            con.println("Error updating leaderboard.");
+                // Swap names
+                String tempName = names[j];
+                names[j] = names[j + 1];
+                names[j + 1] = tempName;
+            }
         }
-
-        con.println("Your name has been added to the leaderboard!");
-        con.println("Press Enter to return to the main menu.");
-        con.readLine();
     }
+
+    // Display the leaderboard in a formatted manner
+    con.println("Rank  | Name                  | Points");
+    con.println("------+-----------------------+-------");
+    for (int i = 0; i < count; i++) {
+        con.println(String.format("%-5d | %-20s | %d", (i + 1), names[i], points[i]));
+    }
+
+    con.println("\nPress Enter to return to the main menu.");
+    con.readLine();
+}
+
+   private static void updateLeaderboard(Console con, String leaderboardFileName, int points) {
+    // Prompt the user for their name
+    con.print("Enter your name for the leaderboard: ");
+    String name = con.readLine();
+
+    // Append the new score to the leaderboard file
+    TextOutputFile file = new TextOutputFile(leaderboardFileName, true);
+    file.println(name + "," + points);
+    file.close();
+
+    // Clear the console and display the updated leaderboard
+    con.clear();
+    con.println("Your name and score have been added to the leaderboard!");
+    con.println("Here is the updated leaderboard:");
+    showLeaderboard(con, leaderboardFileName);
+}
+
 
     private static void secretOption(Console con) {
         con.print("Enter the secret password: ");
