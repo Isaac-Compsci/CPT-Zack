@@ -24,7 +24,7 @@ public class testcpt{
                 printMessage("Invalid choice. Please try again.");
             }
         }
-
+	
         scanner.close();
     }
 
@@ -39,16 +39,16 @@ public class testcpt{
     }
 
     private static void selectThemeAndPlayGame(Scanner scanner) {
-        printMessage("Select a theme:\n1. Superheroes\n2. Animals\n3. Countries\nWhat do you choose:");
+        printMessage("Select a theme:\n1. DC Universe\n2. Super Street Fighter\n3. Super Smash Bros\nWhat do you choose:");
         String themeChoice = scanner.nextLine();
 
         String filename = null;
         if (themeChoice.equals("1")) {
-            filename = "superheroes.txt";
+            filename = "dc_universe.txt";
         } else if (themeChoice.equals("2")) {
-            filename = "animals.txt";
+            filename = "super_stree_fighter.txt";
         } else if (themeChoice.equals("3")) {
-            filename = "countries.txt";
+            filename = "super_smash_bros.txt";
         } else {
             printMessage("Invalid theme choice. Returning to main menu.");
             return;
