@@ -1,3 +1,7 @@
 StarWars
 Marvel
 BrawlStars
+StreetFighter
+SmashBros
+SuperMario
+StarTrek

@@ -1,9 +1,2 @@
-zack,200
-zack,500
-zack,500
-zack,200
-zack,200
-zack,400
-zack,300
-shim,200
-shim,400
+Zack,9999
+stephen,300
